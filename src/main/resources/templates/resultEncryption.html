@@ -11,12 +11,18 @@
             padding: 20px;
             background-color: #fff;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            margin-top: 80px;
         }
-        h2 { color: #333; }
-        pre { background-color: #e9ecef; padding: 15px; border-radius: 5px; }
+        h2 { color: #333; margin-bottom: 20px; }
+        pre {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Wraps text */
+        }
         .btn-success { background-color: #28a745; }
+        .btn-primary { background-color: #007bff; }
     </style>
 </head>
 <body>
@@ -25,16 +31,16 @@
     <p th:text="${message}"></p>
 <!--    <p>DES Key Permutation:</p>-->
 <!--    <pre th:text="${desKeyPermutation}"></pre>-->
-<!--    <p>Concatenated DES Key: </p>-->
+<!--    <p>Concatenated DES Key:</p>-->
 <!--    <pre th:text="${concatenatedKey}"></pre>-->
-<!--    <p>AES Key (Binary): </p>-->
+<!--    <p>AES Key (Binary):</p>-->
 <!--    <pre th:text="${aesKeyBinary}"></pre>-->
-    <p>AES Key (HEX): </p>
+    <p>AES Key (HEX):</p>
     <pre th:text="${aesKeyHex}"></pre>
-    <p>Encryption Time: </p>
-    <pre th:text="${duration}"> ms</pre>
+    <p>Encryption Time:</p>
+    <pre th:text="${duration}">ms</pre>
 
-    <a th:href="@{/encryption/downloadFile(filePath=${filePath})}" class="btn btn-success">Download Encrypted File (1x)</a>
+    <a th:href="@{/encryption/downloadFile(filePath=${filePath})}" class="btn btn-success">Download Stego Image</a>
     <a href="/" class="btn btn-primary">Back to Home</a>
 </div>
 </body>

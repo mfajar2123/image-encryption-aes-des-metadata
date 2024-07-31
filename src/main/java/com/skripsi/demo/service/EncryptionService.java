@@ -14,6 +14,7 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -44,21 +45,19 @@ public class EncryptionService {
         SecretKeySpec aesKey = convertDESKeyToAES(desKeys);
 
         long startTime = System.currentTimeMillis();
-        ByteArrayOutputStream encryptedStream = aesEncryptFile(request.getEncryptImageFile(), aesKey);
-        String base64Encrypted = Base64.getEncoder().encodeToString(encryptedStream.toByteArray());
+        String hexEncrypted = aesEncryptPixelsToHex(request.getEncryptImageFile(), aesKey);
 
         BufferedImage image = ImageIO.read(request.getMetadataImageFile().getInputStream());
-        String outputPath = "src/main/resources/static/images/encrypted.png";
-        writeMetadata(image, base64Encrypted, outputPath);
-        long endTime = System.currentTimeMillis(); // Selesai hitung waktu
-        long duration = endTime - startTime; // Hitung durasi dalam milidetik
+        String outputPath = "src/main/resources/static/images/Stego Image.png";
+        writeMetadata(image, hexEncrypted, outputPath);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("outputPath", outputPath);
         resultMap.put("duration", duration);
 
         return resultMap;
-
-
     }
 
     /**
@@ -96,38 +95,86 @@ public class EncryptionService {
     /**
      * Encrypt the file using AES encryption.
      */
-    private ByteArrayOutputStream aesEncryptFile(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
+//    private String aesEncryptPixelsToHex(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
+//        BufferedImage image = ImageIO.read(inputFile.getInputStream());
+//        int width = image.getWidth();
+//        int height = image.getHeight();
+//        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
+//
+//        byte[] pixelBytes = convertPixelsToBytes(pixels);
+//        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+//        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+//
+//        byte[] encryptedPixels = cipher.doFinal(pixelBytes);
+//
+//        return bytesToHex(encryptedPixels);
+//    }
+
+//    private String aesEncryptPixelsToHex(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
+//        BufferedImage image = ImageIO.read(inputFile.getInputStream());
+//        int width = image.getWidth();
+//        int height = image.getHeight();
+//        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
+//
+//        // Convert width and height to byte array
+//        ByteBuffer buffer = ByteBuffer.allocate(8 + pixels.length * 4);
+//        buffer.putInt(width);
+//        buffer.putInt(height);
+//        buffer.asIntBuffer().put(pixels);
+//
+//        byte[] pixelBytes = buffer.array();
+//        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+//        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+//
+//        byte[] encryptedPixels = cipher.doFinal(pixelBytes);
+//
+//        return bytesToHex(encryptedPixels);
+//    }
+
+    private String aesEncryptPixelsToHex(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
+        BufferedImage image = ImageIO.read(inputFile.getInputStream());
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        System.out.println(width);
+        System.out.println(height);
+        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
+        System.out.println(pixels);
+
+
+        // Convert width and height to byte array
+        ByteBuffer buffer = ByteBuffer.allocate(8 + pixels.length * 4);
+        buffer.putInt(width);
+        buffer.putInt(height);
+        buffer.asIntBuffer().put(pixels);
+
+        byte[] pixelBytes = buffer.array();
+//        System.out.println("pixel data (bytes): " + pixelBytes);
+        System.out.println("pixel data (bytes): " +Arrays.toString(pixelBytes));
+        // Display pixel bytes in hex before encryption
+        String pixelDataHex = bytesToHex(pixelBytes);
+        System.out.println(" Pixel Data (Hex): " + pixelDataHex);
+
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        InputStream inputStream = null;
-        CipherOutputStream cipherOutputStream = null;
-        try {
-            inputStream = inputFile.getInputStream();
-            cipherOutputStream = new CipherOutputStream(outputStream, cipher);
-            byte[] buffer = new byte[1024];
-            int numRead;
-            while ((numRead = inputStream.read(buffer)) >= 0) {
-                cipherOutputStream.write(buffer, 0, numRead);
-            }
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (cipherOutputStream != null) {
-                cipherOutputStream.close();
-            }
-        }
-        System.out.println("Size of encrypted data: " + outputStream.size());
-        return outputStream;
+        byte[] encryptedPixels = cipher.doFinal(pixelBytes);
+
+        return bytesToHex(encryptedPixels);
     }
+
 
     /**
      * Write encrypted data as metadata to an image file.
      */
+
+    private byte[] convertPixelsToBytes(int[] pixels) {
+        ByteBuffer buffer = ByteBuffer.allocate(pixels.length * 4);
+        buffer.asIntBuffer().put(pixels);
+        return buffer.array();
+    }
+
     private static void writeMetadata(BufferedImage image, String encryptedData, String outputPath) throws Exception {
-        // Use PNG format to avoid JPEG compression issues with metadata
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("png");
         if (!writers.hasNext()) {
             throw new IllegalStateException("No writers found for format png");
@@ -152,9 +199,10 @@ public class EncryptionService {
         } finally {
             writer.dispose();
         }
-        System.out.println("Image successfully encrypted with AES-128 and saved with metadata.");
-        System.out.println("Size of output image file: " + outputFile.length());
+        System.out.println("Image successfully saved with encrypted metadata.");
     }
+
+
     /**
      * Convert a string to its binary representation.
      */
@@ -196,16 +244,5 @@ public class EncryptionService {
         return result.toString();
     }
 
-    private static void clearMetadata(IIOMetadata metadata) throws Exception {
-        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree("javax_imageio_jpeg_image_1.0");
-        IIOMetadataNode markerSequence = (IIOMetadataNode) root.getElementsByTagName("markerSequence").item(0);
-
-        NodeList comments = markerSequence.getElementsByTagName("com");
-        while (comments.getLength() > 0) {
-            markerSequence.removeChild(comments.item(0));
-        }
-
-        metadata.mergeTree("javax_imageio_jpeg_image_1.0", root);
-    }
 
 }

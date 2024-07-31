@@ -5,6 +5,24 @@ import org.springframework.web.multipart.MultipartFile;
 public class DecryptionRequest {
     private String aesKey;
     private MultipartFile decryptImageFile;
+    private int width;
+    private int height;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
     // Getters and setters
     public String getAesKey() {
@@ -22,4 +40,6 @@ public class DecryptionRequest {
     public void setDecryptImageFile(MultipartFile decryptImageFile) {
         this.decryptImageFile = decryptImageFile;
     }
+
+
 }

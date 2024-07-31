@@ -12,27 +12,31 @@
             padding: 20px;
             background-color: #fff;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            margin-top: 80px;
         }
-        h1 { color: #333; }
+        h1 { color: #333; margin-bottom: 20px; }
+        pre {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Wraps text */
+        }
         .btn-success { background-color: #28a745; }
         .btn-primary { background-color: #007bff; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div>
-        <h1>Decryption Result</h1>
-        <p>Decryption successful! Click the button below to download your decrypted image.</p>
+    <h1>Decryption Result</h1>
+    <p>Decryption successful! Click the button below to download your decrypted image.</p>
 
-        <p>File Path: </p>
-        <pre> <span th:text="${imagePath}"></span></pre>
-        <p>Decryption Time: </p>
-        <pre> <span th:text="${decryptionTime}">0</span> ms</pre>
-        <a th:href="@{/decryption/download}" class="btn btn-success">Download Decrypted Image</a>
-        <a href="/" class="btn btn-primary">Back to Home</a>
-    </div>
+    <p>File Path:</p>
+    <pre> <span th:text="${imagePath}"></span></pre>
+    <p>Decryption Time:</p>
+    <pre> <span th:text="${decryptionTime}">0</span> ms</pre>
+    <a th:href="@{/decryption/download}" class="btn btn-success">Download Message Image</a>
+    <a href="/" class="btn btn-primary">Back to Home</a>
 </div>
 </body>
 </html>

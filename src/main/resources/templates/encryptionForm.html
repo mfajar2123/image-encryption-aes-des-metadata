@@ -46,6 +46,10 @@
         }
         h2 { color: #333; }
         .btn-primary { background-color: #0056b3; }
+        .alert {
+            display: none;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -62,15 +66,38 @@
             <input type="text" class="form-control" id="userKey" th:field="*{userKey}" maxlength="8" placeholder="Enter up to 8 characters" required>
         </div>
         <div class="mb-3">
-            <label for="encryptImageFile" class="form-label">Encrypt Image File (B&W):</label>
-            <input type="file" class="form-control" id="encryptImageFile" th:field="*{encryptImageFile}" required>
+            <label for="encryptImageFile" class="form-label">Message Image:</label>
+            <input type="file" class="form-control" id="encryptImageFile" th:field="*{encryptImageFile}" accept=".jpg,.jpeg,.png" required>
+            <div class="alert" id="fileAlert1">Only JPG or PNG files are allowed!</div>
         </div>
         <div class="mb-3">
-            <label for="metadataImageFile" class="form-label">Metadata Image File:</label>
-            <input type="file" class="form-control" id="metadataImageFile" th:field="*{metadataImageFile}" required>
+            <label for="metadataImageFile" class="form-label">Cover Image:</label>
+            <input type="file" class="form-control" id="metadataImageFile" th:field="*{metadataImageFile}" accept=".jpg,.jpeg,.png" required>
+            <div class="alert" id="fileAlert2">Only JPG or PNG files are allowed!</div>
         </div>
         <button type="submit" class="btn btn-primary">Encrypt</button>
     </form>
 </div>
+<script>
+    document.getElementById('encryptImageFile').addEventListener('change', function(e) {
+        validateFile(e.target, 'fileAlert1');
+    });
+
+    document.getElementById('metadataImageFile').addEventListener('change', function(e) {
+        validateFile(e.target, 'fileAlert2');
+    });
+
+    function validateFile(inputElement, alertId) {
+        var filePath = inputElement.value;
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+        if (!allowedExtensions.exec(filePath)) {
+            inputElement.value = '';
+            document.getElementById(alertId).style.display = 'block';
+            alert('Only JPG or PNG files are allowed.');
+        } else {
+            document.getElementById(alertId).style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

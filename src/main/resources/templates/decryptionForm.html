@@ -7,16 +7,16 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f5f7; /* Adjusted background color to match encryption form */
+            background-color: #f4f5f7;
             margin: 0;
-            padding-top: 50px; /* Adjusted padding to give space for the navbar */
+            padding-top: 50px;
         }
         .navbar {
             background: #fff;
-            padding: 10px 20px; /* Consistent padding */
+            padding: 10px 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: fixed; /* Fixed at the top */
-            width: 100%; /* Full width */
+            position: fixed;
+            width: 100%;
             top: 0;
             left: 0;
             z-index: 1000;
@@ -37,15 +37,19 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-top: 60px; /* Margin top to adjust space below fixed navbar */
-            width: 80%; /* Adjusted width to match encryption form */
-            margin: 60px auto 20px auto; /* Centering the form vertically and horizontally */
+            margin-top: 60px;
+            width: 80%;
+            margin: 60px auto 20px auto;
         }
         .form-decryption h2 {
-            color: #333; /* Style consistency with encryption form */
-            margin-bottom: 20px; /* Adjusted margin for consistency */
+            color: #333;
+            margin-bottom: 20px;
         }
         .btn-primary { background-color: #0056b3; }
+        .alert {
+            display: none;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -62,12 +66,27 @@
             <input type="text" id="aesKey" name="aesKey" class="form-control" th:field="*{aesKey}" maxlength="32" required placeholder="Enter up to 32 characters">
         </div>
         <div class="mb-3">
-            <label for="decryptImageFile" class="form-label">Image File:</label>
-            <input type="file" id="decryptImageFile" name="decryptImageFile" class="form-control" required>
+            <label for="decryptImageFile" class="form-label">Stego Image:</label>
+            <input type="file" id="decryptImageFile" name="decryptImageFile" class="form-control" accept=".jpg,.jpeg,.png" required>
+            <div class="alert" id="fileAlert">Only JPG or PNG files are allowed!</div>
         </div>
         <button type="submit" class="btn btn-primary">Decrypt</button>
         <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
     </form>
 </div>
+<script>
+    document.getElementById('decryptImageFile').addEventListener('change', function(e) {
+        var fileInput = e.target;
+        var filePath = fileInput.value;
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+        if (!allowedExtensions.exec(filePath)) {
+            fileInput.value = '';
+            document.getElementById('fileAlert').style.display = 'block';
+            alert('Only JPG or PNG files are allowed.');
+        } else {
+            document.getElementById('fileAlert').style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>
