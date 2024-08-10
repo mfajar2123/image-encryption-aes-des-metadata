@@ -63,7 +63,10 @@
     <form th:action="@{/encryption/encrypt}" th:object="${request}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="userKey" class="form-label">User Key:</label>
-            <input type="text" class="form-control" id="userKey" th:field="*{userKey}" maxlength="8" placeholder="Enter up to 8 characters" required>
+            <input type="text" th:class="'form-control ' + ${isInvalid}" id="userKey" th:field="*{userKey}" maxlength="8" placeholder="Enter up to 8 characters" required>
+            <div class="invalid-feedback">
+                Invalid user key
+            </div>
         </div>
         <div class="mb-3">
             <label for="encryptImageFile" class="form-label">Message Image:</label>

@@ -2,6 +2,7 @@ package com.skripsi.demo.controller;
 
 import com.skripsi.demo.model.DecryptionRequest;
 import com.skripsi.demo.service.DecryptionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -13,6 +14,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,13 +29,15 @@ public class DecryptionController {
     private DecryptionService decryptionService;
 
     @GetMapping
-    public String showForm(Model model) {
+    public String showForm(@RequestParam(value = "encinvalid", required = false, defaultValue = "0") String itemid, Model model) {
+        System.out.println(itemid);
         model.addAttribute("request", new DecryptionRequest());
+        model.addAttribute("isInvalid", (itemid.equals("1") ? "is-invalid" : "aas"));
         return "decryptionForm";
     }
 
     @PostMapping("/decrypt")
-    public String decryptImage(@ModelAttribute DecryptionRequest request, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String decryptImage(@ModelAttribute @Valid DecryptionRequest request, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "decryptionForm";
         }
@@ -46,8 +51,11 @@ public class DecryptionController {
             redirectAttributes.addFlashAttribute("decryptionTime", decryptionTime);
             return "redirect:/decryption/result";
         } catch (Exception e) {
-            model.addAttribute("error", "Failed to decrypt image: " + e.getMessage());
-            return "decryptionForm";
+//            model.addAttribute("error", "Failed to decrypt image: " + e.getMessage());
+//            return "decryptionForm";
+            redirectAttributes.addFlashAttribute("error", "Failed to decrypt image: " + e.getMessage());
+
+            return "redirect:/decryption?encinvalid=1";
         }
     }
 

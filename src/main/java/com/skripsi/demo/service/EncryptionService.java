@@ -95,41 +95,6 @@ public class EncryptionService {
     /**
      * Encrypt the file using AES encryption.
      */
-//    private String aesEncryptPixelsToHex(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
-//        BufferedImage image = ImageIO.read(inputFile.getInputStream());
-//        int width = image.getWidth();
-//        int height = image.getHeight();
-//        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
-//
-//        byte[] pixelBytes = convertPixelsToBytes(pixels);
-//        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-//        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-//
-//        byte[] encryptedPixels = cipher.doFinal(pixelBytes);
-//
-//        return bytesToHex(encryptedPixels);
-//    }
-
-//    private String aesEncryptPixelsToHex(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
-//        BufferedImage image = ImageIO.read(inputFile.getInputStream());
-//        int width = image.getWidth();
-//        int height = image.getHeight();
-//        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
-//
-//        // Convert width and height to byte array
-//        ByteBuffer buffer = ByteBuffer.allocate(8 + pixels.length * 4);
-//        buffer.putInt(width);
-//        buffer.putInt(height);
-//        buffer.asIntBuffer().put(pixels);
-//
-//        byte[] pixelBytes = buffer.array();
-//        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-//        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-//
-//        byte[] encryptedPixels = cipher.doFinal(pixelBytes);
-//
-//        return bytesToHex(encryptedPixels);
-//    }
 
     private String aesEncryptPixelsToHex(MultipartFile inputFile, SecretKeySpec aesKey) throws Exception {
         BufferedImage image = ImageIO.read(inputFile.getInputStream());
@@ -138,8 +103,22 @@ public class EncryptionService {
 
         System.out.println(width);
         System.out.println(height);
+//        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
+//        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
+//        for (int i = 0; i < pixels.length; i++) {
+//            System.out.println("Pixel " + i + ": " + pixels[i]);
+//        }
         int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
-        System.out.println(pixels);
+        for (int i = 0; i < pixels.length; i++) {
+            int argb = pixels[i];
+            int alpha = (argb >> 24) & 0xFF;
+            int red = (argb >> 16) & 0xFF;
+            int green = (argb >> 8) & 0xFF;
+            int blue = argb & 0xFF;
+
+            System.out.println("Pixel " + i + ": ARGB = (" + alpha + ", " + red + ", " + green + ", " + blue + ")");
+        }
+
 
 
         // Convert width and height to byte array
@@ -151,6 +130,7 @@ public class EncryptionService {
         byte[] pixelBytes = buffer.array();
 //        System.out.println("pixel data (bytes): " + pixelBytes);
         System.out.println("pixel data (bytes): " +Arrays.toString(pixelBytes));
+
         // Display pixel bytes in hex before encryption
         String pixelDataHex = bytesToHex(pixelBytes);
         System.out.println(" Pixel Data (Hex): " + pixelDataHex);
@@ -187,6 +167,7 @@ public class EncryptionService {
         IIOMetadataNode text = new IIOMetadataNode("tEXt");
         IIOMetadataNode textEntry = new IIOMetadataNode("tEXtEntry");
         textEntry.setAttribute("keyword", "comment");
+//        datates = "";
         textEntry.setAttribute("value", encryptedData);
         text.appendChild(textEntry);
         root.appendChild(text);

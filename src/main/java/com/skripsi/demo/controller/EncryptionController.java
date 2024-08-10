@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
@@ -44,8 +45,9 @@ public class EncryptionController {
      * Tampilkan form enkripsi pada pengguna.
      */
     @GetMapping
-    public String showForm(Model model) {
+    public String showForm( @RequestParam(value = "encinvalid", required = false, defaultValue = "0") String itemid, Model model) {
         model.addAttribute("request", new EncryptionRequest());
+        model.addAttribute("isInvalid", (itemid.equals("1") ? "is-invalid" : "aas"));
         return "encryptionForm";
     }
 
@@ -63,7 +65,7 @@ public class EncryptionController {
             // Panggil metode encryptAndWriteMetadata dan dapatkan hasilnya dalam bentuk Map
             Map<String, Object> resultMap = encryptionService.encryptAndWriteMetadata(request);
             String outputPath = (String) resultMap.get("outputPath");
-            long duration = (Long) resultMap.get("duration");
+            long duration = (Long) resultMap.get("duration") ;
 
             // Generate DES keys
             List<String> desKeys = encryptionService.generateDESKeys(request.getUserKey());
@@ -80,12 +82,12 @@ public class EncryptionController {
             model.addAttribute("aesKeyHex", aesKeyHex);
             model.addAttribute("filePath", outputPath);  // Add file path to model to use in download link
             model.addAttribute("message", "Image encrypted and metadata added successfully.");
-            model.addAttribute("duration", duration);  // Add duration to model
+            model.addAttribute("duration", duration + " ms");  // Add duration to model
 
             return "resultEncryption";  // View where users can download the encrypted image
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to encrypt image: " + e.getMessage());
-            return "redirect:/encryption";
+            return "redirect:/encryption?encinvalid=1";
         }
     }
 

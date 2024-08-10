@@ -116,11 +116,18 @@ public class DecryptionService {
     }
 
     private byte[] decryptData(String hexEncryptedData, SecretKeySpec aesKey) throws Exception {
-        System.out.println("Decrypting data...");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, aesKey);
-        byte[] encryptedBytes = hexStringToByteArray(hexEncryptedData);
-        return cipher.doFinal(encryptedBytes);
+        try {
+            System.out.println("Decrypting data...");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, aesKey);
+            byte[] encryptedBytes = hexStringToByteArray(hexEncryptedData);
+            return cipher.doFinal(encryptedBytes);
+        } catch (Exception e) {
+            // Log the error for debugging purposes
+            e.printStackTrace();
+            // Rethrow the exception with a message
+            throw new Exception("Invalid AES key or corrupted data");
+        }
     }
 
     private byte[] hexStringToByteArray(String s) {

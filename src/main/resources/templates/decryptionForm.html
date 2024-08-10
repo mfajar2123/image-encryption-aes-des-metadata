@@ -63,7 +63,10 @@
         <h2 class="text-center">Decrypt Image</h2>
         <div class="mb-3">
             <label for="aesKey" class="form-label">AES Key (hex):</label>
-            <input type="text" id="aesKey" name="aesKey" class="form-control" th:field="*{aesKey}" maxlength="32" required placeholder="Enter up to 32 characters">
+            <input type="text" id="aesKey" name="aesKey" th:class="'form-control ' + ${isInvalid}" th:field="*{aesKey}" maxlength="32" required placeholder="Enter up to 32 characters">
+            <div class="invalid-feedback">
+                Invalid AES key or corrupted data
+            </div>
         </div>
         <div class="mb-3">
             <label for="decryptImageFile" class="form-label">Stego Image:</label>
@@ -71,7 +74,9 @@
             <div class="alert" id="fileAlert">Only JPG or PNG files are allowed!</div>
         </div>
         <button type="submit" class="btn btn-primary">Decrypt</button>
-        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-danger mt-3" th:if="${error}" th:text="${error}"></div>
+
     </form>
 </div>
 <script>
@@ -87,6 +92,12 @@
             document.getElementById('fileAlert').style.display = 'none';
         }
     });
+
+    var errorMessage = /*[[${error}]]*/ null;
+    if (errorMessage) {
+        // Tampilkan pesan error dengan alert atau cara lain
+        alert(errorMessage); // Alert sederhana, dapat diganti dengan modal atau notifikasi lainnya
+    }
 </script>
 </body>
 </html>
