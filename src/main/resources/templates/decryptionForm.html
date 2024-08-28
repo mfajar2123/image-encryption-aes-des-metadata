@@ -63,7 +63,7 @@
         <h2 class="text-center">Decrypt Image</h2>
         <div class="mb-3">
             <label for="aesKey" class="form-label">AES Key (hex):</label>
-            <input type="text" id="aesKey" name="aesKey" th:class="'form-control ' + ${isInvalid}" th:field="*{aesKey}" maxlength="32" required placeholder="Enter up to 32 characters">
+            <input type="text" id="aesKey" name="aesKey" th:class="'form-control ' + ${isInvalid}" th:field="*{aesKey}" maxlength="32" required placeholder="Enter exactly 32 characters">
             <div class="invalid-feedback">
                 Invalid AES key or corrupted data
             </div>

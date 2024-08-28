@@ -46,6 +46,7 @@ public class EncryptionService {
 
         long startTime = System.currentTimeMillis();
         String hexEncrypted = aesEncryptPixelsToHex(request.getEncryptImageFile(), aesKey);
+        System.out.println("length of encrypted data: " + hexEncrypted.length());
 
         BufferedImage image = ImageIO.read(request.getMetadataImageFile().getInputStream());
         String outputPath = "src/main/resources/static/images/Stego Image.png";
@@ -134,6 +135,7 @@ public class EncryptionService {
         // Display pixel bytes in hex before encryption
         String pixelDataHex = bytesToHex(pixelBytes);
         System.out.println(" Pixel Data (Hex): " + pixelDataHex);
+
 
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);

@@ -34,6 +34,7 @@ public class DecryptionService {
         long startTime = System.currentTimeMillis();
         String hexEncryptedData = extractEncryptedData(request.getDecryptImageFile());
         System.out.println("Encrypted data extracted: " + hexEncryptedData.substring(0, Math.min(hexEncryptedData.length(), 100)) + "...");
+        System.out.println("length of extracted data: " +hexEncryptedData.length());
 
         byte[] decryptedPixels = decryptData(hexEncryptedData, aesKey);
         System.out.println("Data decrypted. Length of decrypted data: " + decryptedPixels.length);
